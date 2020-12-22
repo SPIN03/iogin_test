@@ -3,9 +3,7 @@ import { Injectable } from '@nestjs/common';
 export type User = any;
 
 @Injectable()
-export class LoginService {
-
-
+export class UsersService {
     private readonly users = [
         {
             userId: 1,
@@ -22,5 +20,4 @@ export class LoginService {
     async findOne(username: string): Promise<User | undefined> {
         return this.users.find(user => user.username === username);
     }
-
 }

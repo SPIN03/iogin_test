@@ -4,9 +4,11 @@ import { LoginController } from './login.controller';
 
 import { AuthModule } from 'src/auth/auth.module';
 
+import { UserModule } from 'src/user/user.module';
+
 
 @Module({
-  imports:[AuthModule],
+  imports:[AuthModule,UserModule],
   providers: [LoginService],
   controllers: [LoginController],
   

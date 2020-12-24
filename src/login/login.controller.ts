@@ -1,16 +1,22 @@
-import { Controller, Request, Post, UseGuards, Get } from '@nestjs/common';
+import { Controller, Request, Post, UseGuards, Get, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import { Role } from 'src/role/role.enum';
-import { Roles } from 'src/role/roles.decorator';
+import { RoleCreateDto } from 'src/dto/role-create.dto';
+import { UserCreateDto } from 'src/dto/user-create.dto';
+import { UsersService } from 'src/user/user.service';
 
 @Controller('login')
 export class LoginController {
-    constructor(private authService: AuthService) {}
+    
+    constructor(private authService: AuthService,private readonly userservice : UsersService) {}
    
+    // @UseGuards(LocalStrategy)
+    // @
+    
+
     @UseGuards(LocalAuthGuard)
-    // @Roles(Role.Admin)
+    
     @Post('auth/login')
     async login(@Request() req) {
       console.log("req-user :",req.user)
@@ -22,4 +28,16 @@ export class LoginController {
     getProfile(@Request() req) {
       return req.user;
     }
+    
+    @Post('adduser')
+    @UsePipes(new ValidationPipe())
+    async addUser(@Body() body: UserCreateDto) {
+        return this.userservice.addUser(body);
+    }
+    @Post('addrole')
+    @UsePipes(new ValidationPipe())
+    async addrole(@Body() body: RoleCreateDto) {
+        return this.userservice.addRole(body);
+    }
+
 }

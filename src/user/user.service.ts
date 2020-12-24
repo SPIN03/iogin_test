@@ -81,7 +81,7 @@ export class UsersService {
                 const findro = await this.roles.findOne({where:{id_role: 2}})
                 console.log("fine role :",findro)
                 user.roleid = findro
-
+                console.log("user role :",user.roleid)
                 await user.save();
             
             return {

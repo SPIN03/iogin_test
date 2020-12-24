@@ -3,29 +3,24 @@ import { RoleCreateDto } from 'src/dto/role-create.dto';
 import { UserCreateDto } from 'src/dto/user-create.dto';
 import { Role } from 'src/entity/role.entity';
 import { Users } from 'src/entity/users.entity';
-
+import * as bcrypt from 'bcrypt';
 import { RoleRepository, UserRepository } from './user.reponsitory';
 
-// export type User = any;
 
 @Injectable()
 export class UsersService {
- constructor(private readonly user :UserRepository,private readonly roles : RoleRepository){}
+    
+    private saltRounds = 10;
+    constructor(private readonly user :UserRepository,private readonly roles : RoleRepository){}
 
-    // private readonly users = [
-    //     {
-    //         userId: 1,
-    //         username: 'john',
-    //         password: 'changeme',
-    //         role : 1
-    //     },
-    //     {
-    //         userId: 2,
-    //         username: 'maria',
-    //         password: 'guess',
-    //         role : 2
-    //     },
-    // ];
+    async getHash(password: string): Promise<string> {
+        return bcrypt.hash(password, this.saltRounds);
+    }
+
+    async compareHash(password: string, hash: string): Promise<boolean> {
+        return bcrypt.compare(password, hash);
+    }
+
 
     async findOne(username: string): Promise<any | undefined> {
      try{
@@ -40,8 +35,7 @@ export class UsersService {
             message: error.message,
         }); 
       }
-        
-       
+               
     }
 
 
@@ -77,7 +71,7 @@ export class UsersService {
                 const finduser = await this.user.findOne({ where: { username: username } })
                 if (finduser) throw new Error('มีชื่อซ้ำ');
                 user.username = username
-                user.password = password
+                user.password = await this.getHash(password);
                 const findro = await this.roles.findOne({where:{id_role: 2}})
                 console.log("fine role :",findro)
                 user.roleid = findro

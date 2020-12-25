@@ -24,19 +24,20 @@ export class LoginController {
     }
     @UseGuards(JwtAuthGuard)
     @Get('profile')
-    getProfile(@Request() req) {
-      return req.user;
+    getprofile(@Request() req) {
+      console.log(req.user)
+      return  this.userservice.profile(req.user.username);
     }
     
     @Post('adduser')
     @UsePipes(new ValidationPipe())
-    async addUser(@Body() body: UserCreateDto) {
-        return this.userservice.addUser(body);
+    async adduser(@Body() body: UserCreateDto) {
+        return this.userservice.adduser(body);
     }
     @Post('addrole')
     @UsePipes(new ValidationPipe())
     async addrole(@Body() body: RoleCreateDto) {
-        return this.userservice.addRole(body);
+        return this.userservice.addrole(body);
     }
 
 }

@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class AuthService {
@@ -17,15 +18,23 @@ export class AuthService {
         const user = await this.usersService.findOne(username);
         const passwordhash = await this.compareHash(pass,user.password)
         console.log('พาสแฮช :',passwordhash)
-        if (passwordhash) {
-            const { password, ...result } = user;
-            console.log("authservice-result :",result)
-            return result;
+        try{
+            if (!passwordhash) throw new Error('รหัสผ่านไม่ตรง') 
+                const { password, ...result } = user;
+                console.log("authservice-result :",result)
+                return result;
+            
+        }catch(error){
+            throw new BadRequestException({
+                success: false,
+                message: error.message,
+            }); 
         }
-        return null;
+       
+      
     }
     async login(user: any) {
-        const payload = { username: user.username, sub: user.userId };
+        const payload = { username: user.username, sub: user.userId,role : user.roleid };
         return {
             access_token: this.jwtService.sign(payload),
        };

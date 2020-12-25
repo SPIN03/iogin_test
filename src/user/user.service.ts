@@ -17,11 +17,24 @@ export class UsersService {
         return bcrypt.hash(password, this.saltRounds);
     }
 
-   
+   async profile(username:string): Promise<any |undefined>{
+      try{ const fine = await this.user.findOne({where : {username :username},relations:['roleid']})
+      const profile = [fine.username,fine.roleid]
+      console.log(fine)
+        if(!fine) throw new Error ('ไม่มี')
+       return profile
+    
+    } catch(error){
+        throw new BadRequestException({
+            success: false,
+            message: error.message,
+        }); 
+      }
+   }
 
     async findOne(username: string): Promise<any | undefined> {
      try{
-        const fine =  await this.user.findOne({ where: {username: username } });
+        const fine =  await this.user.findOne({ where: {username: username },relations:['roleid'] });
        if(!fine) throw new Error('Not have user')
        console.log("fine :",fine)
        return fine
@@ -35,8 +48,21 @@ export class UsersService {
                
     }
 
+    async findrole(name :string) : Promise<any>{
+        try{ const fine = await this.roles.findOne({where : {name :name}})
+        console.log(fine)
+          if(!fine) throw new Error ('ไม่มี')
+         return fine
+      
+      } catch(error){
+          throw new BadRequestException({
+              success: false,
+              message: error.message,
+          }); 
+        }
+    }
 
-    async addRole(body :RoleCreateDto): Promise<any>{
+    async addrole(body :RoleCreateDto): Promise<any>{
         try{
             if (!body) throw new Error('No data')
             const role = new Role()
@@ -58,7 +84,7 @@ export class UsersService {
             }); 
         }
     }
-    async addUser(body: UserCreateDto): Promise<any> {
+    async adduser(body: UserCreateDto): Promise<any> {
         try {
             if (!body) throw new Error('No data');
            
@@ -70,6 +96,10 @@ export class UsersService {
                 user.username = username
                 user.password = await this.getHash(password);
                 const findro = await this.roles.findOne({where:{id_role: 2}})
+                // if(!findro){
+                //     const newrole = new Role()
+                     //สร้างแอดมินกับยูเซอ
+                // }
                 console.log("fine role :",findro)
                 user.roleid = findro
                 console.log("user role :",user.roleid)

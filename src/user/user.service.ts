@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { RoleCreateDto } from 'src/dto/role-create.dto';
 import { UserCreateDto } from 'src/dto/user-create.dto';
 import { Role } from 'src/entity/role.entity';
@@ -17,12 +17,31 @@ export class UsersService {
         return bcrypt.hash(password, this.saltRounds);
     }
 
-   async profile(username:string): Promise<any |undefined>{
-      try{ const fine = await this.user.findOne({where : {username :username},relations:['roleid']})
-      const profile = [fine.username,fine.roleid]
+    async getuserall() {
+        try {
+            const finduser = await this.user.find()
+
+            if (!finduser.length) throw new Error('no data');
+            return {
+                success: true,
+                data: finduser
+            }
+
+        } catch (error) {
+            throw new NotFoundException({
+                success: false,
+                message: error.message,
+            });
+        }
+    }
+
+   async profile(username:string): Promise<any>{
+       console.log('ยูเซอ :',username)
+      try{ const fine = await this.user.findOne({where : {username :username}})
+    //   const profile = [fine.username,fine.roleid]
       console.log(fine)
         if(!fine) throw new Error ('ไม่มี')
-       return profile
+       return fine
     
     } catch(error){
         throw new BadRequestException({
@@ -32,7 +51,7 @@ export class UsersService {
       }
    }
 
-    async findOne(username: string): Promise<any | undefined> {
+    async findOne(username: string): Promise<any> {
      try{
         const fine =  await this.user.findOne({ where: {username: username },relations:['roleid'] });
        if(!fine) throw new Error('Not have user')
@@ -48,10 +67,10 @@ export class UsersService {
                
     }
 
-    async findrole(name :string) : Promise<any>{
+    async findrole(name :string) : Promise<object>{
         try{ const fine = await this.roles.findOne({where : {name :name}})
         console.log(fine)
-          if(!fine) throw new Error ('ไม่มี')
+          if(!fine) throw new Error ('ไม่มี Role')
          return fine
       
       } catch(error){

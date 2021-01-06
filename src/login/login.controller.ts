@@ -22,13 +22,23 @@ export class LoginController {
         return this.authService.login(req.user);
 
     }
+
+
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     getprofile(@Request() req) {
       console.log(req.user)
-      return  this.userservice.profile(req.user.username);
+      // return  this.userservice.profile(req.user.username);
+      return req.user;
     }
     
+    
+    @UseGuards(JwtAuthGuard)
+    @Get('getuserall')
+    getuserall(){
+      return this.userservice.getuserall()
+    }
+
     @Post('adduser')
     @UsePipes(new ValidationPipe())
     async adduser(@Body() body: UserCreateDto) {

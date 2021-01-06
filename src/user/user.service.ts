@@ -114,7 +114,7 @@ export class UsersService {
                 if (finduser) throw new Error('มีชื่อซ้ำ');
                 user.username = username
                 user.password = await this.getHash(password);
-                const findro = await this.roles.findOne({where:{id_role: 2}})
+                const findro = await this.roles.findOne({where:{id_role: 1}})
                 // if(!findro){
                 //     const newrole = new Role()
                      //สร้างแอดมินกับยูเซอ
